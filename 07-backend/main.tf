@@ -30,9 +30,17 @@ resource "null_resource" "backend" {
     host     = module.backend.private_ip
   }
 
-  provisioner "file" {
+  provisioner "file" {                                   # copy file from local to ec2 instance by file provisioner 
     source      = "${var.common_tags.Component}.sh"      # backend.sh
     destination = "/tmp/${var.common_tags.Component}.sh" # /tmp/backend.sh
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/${var.common_tags.Component}.sh",
+      "sudo sh /tmp/${var.common_tags.Component}.sh ${var.common_tags.Component} ${var.environment}"
+    ]
+  }
+
 
 }
